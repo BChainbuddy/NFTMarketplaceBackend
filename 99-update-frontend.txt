@@ -1,0 +1,27 @@
+const { ethers } = require("hardhat")
+const fs = require("fs")
+
+module.exports = async function () {
+    if (process.env.UPDATE_FRONT_END) {
+        console.log("updating front end...")
+        await updateContractAddresses()
+    }
+}
+
+frontEndContractsFile = ""../nextjs-nft-marketplace-thegraph-fcc/constants/""
+
+async function updateContractAddresses() {
+    const nftmarketplace = await ethers.getContract("NFTMarketplace")
+    const chainId = network.config.chainId.toString()
+    const contractAddresses = JSON.parse(fs.readFileSync(frontEndContractsFile, "UTF-8"))
+    if (chainId in contractAddresses) {
+        if (!contractAddresses[chainId]["NFTMarketplace"].includes(nftmarketplace.address)) {
+            contractAddresses[chainId]["NFTMarketplace"].push(nftmarketplace.address)
+        } else {
+            contractAddresses[chainId] = { NFTMarketplace: [nftmarketplace.address] }
+        }
+        fs.writeFileSync(frontEndContractsFile, JSON.stringify(contractAddresses))
+    }
+}
+
+module.exports.tags = ["all", "frontend"]
